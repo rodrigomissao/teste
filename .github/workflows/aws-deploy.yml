@@ -1,0 +1,44 @@
+name: AWS Deploy and Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v2
+
+    - name: Configure AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Substitua pela sua região AWS
+
+    - name: Deploy to AWS Elastic Beanstalk
+      run: |
+        aws elasticbeanstalk create-application-version --application-name your-app-name \
+        --version-label $GITHUB_SHA --source-bundle S3Bucket=elasticbeanstalk-us-east-1-1234567890,S3Key=$GITHUB_SHA.zip
+        aws elasticbeanstalk update-environment --environment-name your-environment-name \
+        --version-label $GITHUB_SHA
+
+  test:
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Configure AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Substitua pela sua região AWS
+
+    - name: Run Tests on AWS
+      run: |
+        # Adicione os comandos para executar seus testes na AWS
