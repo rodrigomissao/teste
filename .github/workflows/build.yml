@@ -1,0 +1,26 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: docker build -t myapp .
+
+    - name: Start Docker Compose
+      run: docker-compose up -d
+
+    - name: Check Docker Compose logs
+      run: docker-compose logs -f
+
+    - name: Test aplicação
+      run: curl -I http://localhost:8000
