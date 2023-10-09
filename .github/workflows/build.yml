@@ -23,4 +23,4 @@ jobs:
       run: docker-compose logs -f
 
     - name: Test aplicação
-      run: curl -I http://localhost:8000
+      run: curl -I http://app-teste.com
